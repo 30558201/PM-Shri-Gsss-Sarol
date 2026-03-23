@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Saar | Learn Smart</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           1. CSS VARIABLES & BASE SETUP
+           ========================================= */
+        :root {
+            --bg-pure: #ffffff;
+            --bg-light: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --nav-height: 72px;
+            
+            /* Pastel Theme Colors for Cards */
+            --c-phy-bg: #eff6ff; --c-phy-border: #bfdbfe; --c-phy-text: #1d4ed8;
+            --c-chem-bg: #f0fdf4; --c-chem-border: #bbf7d0; --c-chem-text: #15803d;
+            --c-math-bg: #faf5ff; --c-math-border: #e9d5ff; --c-math-text: #7e22ce;
+            --c-game-bg: #fdf2f8; --c-game-border: #fbcfe8; --c-game-text: #be185d;
+            --c-jr-bg: #fffbeb; --c-jr-border: #fde68a; --c-jr-text: #b45309;
+
+            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-pure);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =========================================
+           2. NAVBAR (STICKY + SOFT SHADOW)
+           ========================================= */
+        .navbar {
+            position: fixed; top: 0; width: 100%; height: var(--nav-height);
+            padding: 0 5%; display: flex; justify-content: space-between; align-items: center;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 1000; transition: var(--transition);
+            border-bottom: 1px solid transparent;
+        }
+        .navbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .logo {
+            height: 36px; width: auto; object-fit: contain; border-radius: 8px;
+        }
+
+        .hamburger {
+            background: none; border: none; color: var(--text-main); cursor: pointer;
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: var(--transition); background: var(--bg-light);
+        }
+        .hamburger:hover { background: #f1f5f9; }
+        .hamburger:active { transform: scale(0.9); }
+
+        /* =========================================
+           3. MENU DRAWER
+           ========================================= */
+        .menu-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.1); backdrop-filter: blur(4px);
+            z-index: 2000; opacity: 0; visibility: hidden; transition: var(--transition);
+        }
+        .menu-overlay.active { opacity: 1; visibility: visible; }
+
+        .menu-drawer {
+            position: fixed; top: 0; right: -100%; width: 100%; max-width: 320px; height: 100%;
+            background: var(--bg-pure); z-index: 2001; padding: 30px;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.05); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column;
+        }
+        .menu-drawer.active { right: 0; }
+        
+        .close-menu {
+            align-self: flex-end; background: var(--bg-light); border: none; color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: var(--transition);
+            margin-bottom: 40px;
+        }
+        .close-menu:hover { background: #e2e8f0; transform: rotate(90deg); }
+
+        .menu-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .menu-links a {
+            display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text-main);
+            font-size: 1.1rem; font-weight: 600; padding: 16px; border-radius: 12px;
+            transition: all 0.2s; background: var(--bg-pure);
+        }
+        .menu-links a:hover { background: var(--bg-light); color: #2563eb; transform: translateX(5px); }
+        .menu-links a i { color: var(--text-muted); transition: color 0.2s; }
+        .menu-links a:hover i { color: #2563eb; }
+
+        /* =========================================
+           4. HERO SECTION (EXACTLY 3X NAVBAR)
+           ========================================= */
+        .hero {
+            position: relative;
+            height: calc(var(--nav-height) * 3); /* EXACTLY 3x Navbar Height */
+            margin-top: var(--nav-height);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 0 20px; background-color: var(--bg-pure);
+            overflow: hidden;
+        }
+
+        /* Subtle Floating Dots */
+        .dot { position: absolute; border-radius: 50%; background: #f1f5f9; z-index: 0; animation: float 6s ease-in-out infinite; }
+        .dot-1 { width: 40px; height: 40px; top: 15%; left: 10%; animation-delay: 0s; }
+        .dot-2 { width: 25px; height: 25px; bottom: 20%; right: 15%; animation-delay: -2s; background: #f8fafc; }
+        .dot-3 { width: 15px; height: 15px; top: 30%; right: 25%; animation-delay: -4s; }
+
+        .hero-content { position: relative; z-index: 10; width: 100%; max-width: 800px; }
+        
+        .hero h1 {
+            font-size: clamp(1.75rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: -0.5px;
+            color: var(--text-main); margin-bottom: 8px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .hero p {
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem); color: var(--text-muted); font-weight: 500;
+        }
+
+        /* Staggered Animations */
+        .fade-up-1 { opacity: 0; animation: fadeUp 0.8s forwards 0.1s; }
+        .fade-up-2 { opacity: 0; animation: fadeUp 0.8s forwards 0.3s; }
+
+        /* =========================================
+           5. SUBJECT CARDS SECTION
+           ========================================= */
+        .section-container { padding: 40px 5% 80px; max-width: 1200px; margin: 0 auto; }
+        
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;
+        }
+        
+        .subject-card {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 32px 24px; border-radius: 20px; text-decoration: none;
+            background: var(--bg-pure); border: 1px solid #f1f5f9;
+            box-shadow: var(--shadow-soft); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+
+        /* Card Colors & Gradients */
+        .c-phy { background: linear-gradient(180deg, var(--bg-pure) 0%, var(--c-phy-bg) 100%); border-color: var(--c-phy-border); }
+        .c-chem { background: linear-gradient(180deg, var(--bg-pure) 0%, var(--c-chem-bg) 100%); border-color: var(--c-chem-border); }
+        .c-math { background: linear-gradient(180deg, var(--bg-pure) 0%, var(--c-math-bg) 100%); border-color: var(--c-math-border); }
+        .c-game { background: linear-gradient(180deg, var(--bg-pure) 0%, var(--c-game-bg) 100%); border-color: var(--c-game-border); }
+        .c-jr { background: linear-gradient(180deg, var(--bg-pure) 0%, var(--c-jr-bg) 100%); border-color: var(--c-jr-border); }
+
+        .subject-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .subject-icon { font-size: 2.5rem; margin-bottom: 16px; transition: transform 0.3s ease; }
+        .subject-card:hover .subject-icon { transform: scale(1.1) rotate(4deg); }
+
+        .subject-card h3 {
+            font-size: 1.15rem; font-weight: 700;
+        }
+        
+        .c-phy h3 { color: var(--c-phy-text); }
+        .c-chem h3 { color: var(--c-chem-text); }
+        .c-math h3 { color: var(--c-math-text); }
+        .c-game h3 { color: var(--c-game-text); }
+        .c-jr h3 { color: var(--c-jr-text); }
+
+        /* =========================================
+           6. FOOTER
+           ========================================= */
+        footer {
+            background-color: var(--bg-light); padding: 60px 20px; text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-text { font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+        .footer-sub { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-bottom: 24px; line-height: 1.5; }
+
+        .contact-btns { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        
+        .btn-contact {
+            display: flex; align-items: center; gap: 8px; padding: 12px 24px;
+            border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+            background: var(--bg-pure); border: 1px solid #e2e8f0; color: var(--text-main);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s ease;
+        }
+        
+        .btn-contact:hover {
+            transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
+        
+        .btn-wa:hover { color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; }
+        .btn-em:hover { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+
+        /* =========================================
+           7. ANIMATIONS
+           ========================================= */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* Scroll Reveal */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        .d-1 { transition-delay: 0.1s; } .d-2 { transition-delay: 0.2s; }
+        .d-3 { transition-delay: 0.3s; } .d-4 { transition-delay: 0.4s; } .d-5 { transition-delay: 0.5s; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczO6W8wQSIuYgjT3z8r_saT5ge2-gnQs6qi4ABCi6P-qsKf-SRDt6Tih36nBSUKa7-Nh2KWCUNOVqFR2Gl0613QTnQMvLkMkCiCAsGexfT8ohtSeVCy0_EZYKW3YejwrBG9layhFrNwr3g9bv2QZUuA=w509-h273-s-no-gm?authuser=0" alt="Saar Logo" class="logo">
+        <button class="hamburger" id="menuOpen"><i data-lucide="menu"></i></button>
+    </nav>
+
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div class="menu-drawer" id="menuDrawer">
+        <button class="close-menu" id="menuClose"><i data-lucide="x" size="24"></i></button>
+        <ul class="menu-links">
+            <li><a href="https://govt-26.github.io/Saar/index.html"><i data-lucide="home" size="20"></i> Home</a></li>
+            <li><a href="https://govt-26.github.io/Saar/phy.html"><i data-lucide="atom" size="20"></i> Physics</a></li>
+            <li><a href="https://govt-26.github.io/Saar/chemistry.html"><i data-lucide="flask-conical" size="20"></i> Chemistry</a></li>
+            <li><a href="https://govt-26.github.io/Saar/math.html"><i data-lucide="calculator" size="20"></i> Mathematics</a></li>
+            <li><a href="https://govt-26.github.io/Saar/siten.html"><i data-lucide="gamepad-2" size="20"></i> Saar Jr.</a></li>
+        </ul>
+    </div>
+
+    <section class="hero">
+        <div class="dot dot-1"></div>
+        <div class="dot dot-2"></div>
+        <div class="dot dot-3"></div>
+        
+        <div class="hero-content">
+            <h1 class="fade-up-1">Learn Smart with Saar</h1>
+            <p class="fade-up-2">Free Notes • Game-Based Learning • Learn While Playing</p>
+        </div>
+    </section>
+
+    <section class="section-container">
+        <div class="cards-grid">
+            
+            <a href="https://govt-26.github.io/Saar/phy.html" class="subject-card c-phy reveal d-1">
+                <span class="subject-icon">⚡</span>
+                <h3>Physics</h3>
+            </a>
+            
+            <a href="https://govt-26.github.io/Saar/chemistry.html" class="subject-card c-chem reveal d-2">
+                <span class="subject-icon">🧪</span>
+                <h3>Chemistry</h3>
+            </a>
+            
+            <a href="https://govt-26.github.io/Saar/math.html" class="subject-card c-math reveal d-3">
+                <span class="subject-icon">📐</span>
+                <h3>Mathematics</h3>
+            </a>
+            
+            <a href="https://govt-26.github.io/Saar/siten.html" class="subject-card c-game reveal d-4">
+                <span class="subject-icon">🎮</span>
+                <h3>Learning Games</h3>
+            </a>
+            
+            <a href="https://govt-26.github.io/Saar/siten.html" class="subject-card c-jr reveal d-5">
+                <span class="subject-icon">👶</span>
+                <h3>Saar Junior</h3>
+            </a>
+
+        </div>
+    </section>
+
+    <footer>
+        <p class="footer-text">Made in India 🇮🇳 with ❤️</p>
+        <p class="footer-sub">By Vishal Nation<br>By Vishal Surya</p>
+        
+        <div class="contact-btns">
+            <a href="https://wa.me/919805397956" target="_blank" class="btn-contact btn-wa">
+                <i data-lucide="message-circle" size="18"></i> WhatsApp
+            </a>
+            <a href="mailto:contact.vishalsurya@gmail.com" class="btn-contact btn-em">
+                <i data-lucide="mail" size="18"></i> Email Us
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Sticky Navbar Soft Shadow
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Drawer Menu Logic
+        const menuOpen = document.getElementById('menuOpen');
+        const menuClose = document.getElementById('menuClose');
+        const menuDrawer = document.getElementById('menuDrawer');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function openMenu() {
+            menuDrawer.classList.add('active');
+            menuOverlay.classList.add('active');
+        }
+
+        function closeMenu() {
+            menuDrawer.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        }
+
+        menuOpen.addEventListener('click', openMenu);
+        menuClose.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+
+        // Scroll Reveal Animation (Intersection Observer)
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -20px 0px" });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+</html>
